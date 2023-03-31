@@ -1,0 +1,20 @@
+type Promotion {
+  id: Int!
+  description: String
+  item: Product
+  type: Type
+  percentage: Float
+  quantity: Int
+  min_qty: Int
+  bonus_item: Product
+}
+
+type Type {
+  id: Int!
+  name: String
+}
+
+type Query {
+  promotions: [Promotion]
+  promotion(id: Int, item_sku: String): Promotion
+}

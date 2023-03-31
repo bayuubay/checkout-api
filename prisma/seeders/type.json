@@ -1,0 +1,14 @@
+{
+  "Type": [
+    {
+      "name" : "Buy 1 get 1"
+    },
+    {
+      "name" : "Cash Discount"
+    },
+    {
+      "name" : "Item Discount"
+    }
+  ]
+}
+  
