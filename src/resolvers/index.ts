@@ -12,8 +12,7 @@ const resolvers: IResolvers = {
     orders: order.getOrder,
     checkout: order.checkout,
     promotions: promotion.getPromotions,
-    promotion: promotion.getPromotion
-
+    promotion: promotion.getPromotion,
   },
   Mutation: {
     addOrder: order.addOrder

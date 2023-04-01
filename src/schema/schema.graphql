@@ -1,0 +1,65 @@
+type Query {
+  hello: String!
+  orders: [Order]
+  order(id: ID!): Order
+  checkout: Order
+  products: [Product]
+  product(sku: String!): Product
+  promotions: [Promotion]
+  promotion(id: Int, item_sku: String): Promotion
+}
+
+
+type Mutation {
+  addOrder(input: AddOrderInput): Order
+  addProduct(sku: String!, name: String!, price: Float!, inventory_qty: Int): Product
+  updateQty(sku: String!, inventory_qty: Int!): Product
+}
+
+type Order {
+  id: ID!
+  total_price: Float
+  status: Status
+  orderDetail: [OrderDetail]
+}
+
+type OrderDetail {
+  id: ID!
+  qty: Int
+  price: Float
+  order_id: Int
+  product: Product!
+}
+
+input AddOrderInput {
+  sku: String!
+  qty: Int
+}
+
+type Status {
+  id: ID!
+  name: String 
+}
+
+type Product {
+  sku: String!
+  name: String
+  price: Float
+  inventory_qty: Int
+}
+
+type Promotion {
+  id: Int!
+  description: String
+  item: Product
+  type: Type
+  percentage: Float
+  quantity: Int
+  min_qty: Int
+  bonus_item: Product
+}
+
+type Type {
+  id: Int!
+  name: String
+}
