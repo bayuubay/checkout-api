@@ -1,4 +1,4 @@
-name: Checkout API
+name: Shopping API
 
 on:
   push:
@@ -35,5 +35,5 @@ jobs:
     - name: Upload binary artifact
       uses: actions/upload-artifact@v3
       with:
-        name: checkout_api_binary
-        path: ./dist/checkout_api
+        name: shopping_api_binary
+        path: ./dist/shopping_api
