@@ -15,7 +15,7 @@ model Product {
   name String
   price Float
   inventory_qty Int
-  orderDetail OrderDetail[]
+  order_detail OrderDetail[]
   promotion Promotion[] @relation("item")
   promotion_bonus Promotion[] @relation("bonus_item")
 }
@@ -23,11 +23,10 @@ model Product {
 model Order {
   id Int @id @default(autoincrement())
   total_price Float
-  orderDetail OrderDetail[]
-  promotion Promotion? @relation(fields: [promotion_id], references: [id])
-  promotion_id Int? 
+  order_detail OrderDetail[]
   status Status? @relation(fields: [status_id], references: [id])
   status_id Int?
+  order_promotion OrderPromotion[]
 }
 
 model OrderDetail{
@@ -38,6 +37,7 @@ model OrderDetail{
   product_sku String
   order Order @relation(fields: [order_id], references: [id])
   order_id Int
+  order_type String @default("regular")
 }
 
 model Promotion{
@@ -45,7 +45,6 @@ model Promotion{
   item Product @relation("item", fields: [item_sku], references: [sku])
   item_sku String
   description String
-  order Order[]
   type Type @relation(fields: [type_id], references: [id])
   type_id Int
   percentage Float
@@ -54,6 +53,7 @@ model Promotion{
   price Float
   bonus_item Product? @relation("bonus_item",fields: [bonus_item_sku], references: [sku])
   bonus_item_sku String?
+  order_promotion OrderPromotion[]
 }
 
 model Status {
@@ -66,4 +66,13 @@ model Type {
   id Int @id @default(autoincrement())
   name String
   promotion Promotion[]
+}
+
+model OrderPromotion {
+  id Int @id @default(autoincrement())
+  order Order @relation(fields: [order_id], references: [id])
+  order_id Int
+  promotion Promotion @relation(fields: [promotion_id], references: [id])
+  promotion_id Int
+  @@unique(fields: [order_id, promotion_id], name: "order_promo_id")
 }

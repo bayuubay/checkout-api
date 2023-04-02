@@ -1,28 +1,52 @@
-// import {products, orders, order_details } from '../database/mock.json'
-import {prisma} from '../database/client'
-// import { Product } from '../schema/product'
 import { GraphQLError } from 'graphql';
-
+import { handle_promotion } from './promotion';
 export default {
-  getOrder: async () => {
-    const result = await prisma.order.findMany({include: {orderDetail: {include: {product: true}}}})
-    return result
+  getOrder: async (_: void, __: any, {db}) => {
+    try {
+      const result = await db.order.findMany({
+        include: {
+          order_detail: {
+            include: { 
+              product: true
+            },
+          },
+          order_promotion: {
+            include:{
+              promotion: {
+                include: {
+                  item:true,
+                  type: true,
+                  bonus_item: true
+                }
+              }
+            }
+          },
+          status: true
+        },
+      });
+      
+      return result
+    } catch (error) {
+      throw error
+    }
   },
-  addOrder: async(_: void, args: any ) => {
+  addOrder: async(_: void, args: any, {db} ) => {
     try {
       const {sku, qty} = args.input
       let newOrder
-      const product = await prisma.product.findUnique({where: {sku}})
+      const product = await db.product.findUnique({where: {sku}})
+      const orderStatus = await db.status.findMany()
+      const orderStatusWaiting = orderStatus.find(({name})=>name === 'waiting')
       if(!product) throw new GraphQLError("Not Found",{ extensions: {code: "404"}})
       const remaining = product.inventory_qty - qty
       if(remaining < 0 || qty == 0) throw new GraphQLError("Not Sufficient Product Qty", {extensions: {code: "400"}})
       if(product && remaining >= 0){
-        newOrder = await prisma.$transaction(async(t) => {
-          let order = await t.order.findFirst({where: {status_id: 1}})
+        newOrder = await db.$transaction(async(t) => {
+          let order = await t.order.findFirst({where: {status_id: orderStatusWaiting.id}})
           if(!order) {
-            order = await t.order.create({data:{total_price: 0, status_id: 1}})
+            order = await t.order.create({data:{total_price: 0, status_id: orderStatusWaiting.id}})
           }
-          const newOrderDetail = await t.orderDetail.create({
+          const new_order_detail = await t.orderDetail.create({
             data:{
               qty,
               price: product?.price,
@@ -30,111 +54,76 @@ export default {
               order_id: order.id
             }
           })
-
-          if(sku === '43N23P') {
-            const product = await prisma.product.findUnique({where: {sku: '234234'}})
-            if(product?.inventory_qty && product?.inventory_qty >= 1) {
-              await t.orderDetail.create({
-                data:{
-                  qty,
-                  price: 0,
-                  product_sku: product?.sku,
-                  order_id: order.id
-                }
-              })
-              await t.product.update({where:{sku: '234234'}, data:{inventory_qty: (product.inventory_qty - qty)}})
-            }
-          }
           const total_price = order.total_price + (product.price * qty)
           
           order = await t.order.update({where: {id: order.id}, data: {total_price}})
     
-          if(order && newOrderDetail){
+          if(order && new_order_detail){
             await t.product.update({where:{sku}, data:{inventory_qty: (product.inventory_qty - qty)}})
           }
           return order
         })
       }
+      newOrder = await db.order.findUnique({
+        where: {id: newOrder.id},
+        include: {
+          status: true,
+          order_detail: {
+            include:{
+              product: true
+            }
+          }
+        }
+      })
       return newOrder
     } catch (error) {
       throw error
     } finally {
-      prisma.$disconnect
+      db.$disconnect()
     }
   },
-  checkout: async (_: void, args: any) => {
+  checkout: async (_: void, args: any, {db}) => {
     try {
       const {} = args
-      const status = await prisma.status.findMany()
+      const status = await db.status.findMany()
       const status_waiting = status?.find(({name})=>name === 'waiting')
-      let order = await prisma.order.findFirst({
+      let order = await db.order.findFirst({
         where: {status_id: status_waiting?.id}, 
         include:{
-          orderDetail: {
+          order_detail: {
             include:{
               product: true
             }
           },
           status: true
-        }})
-      let new_total_price = 0
-      //handle promotion here
-      const promotions = await prisma.promotion.findMany()
-      let updated_order = await prisma.$transaction(async (t)=> {
-        for (const promo of promotions) {
-          const detail = order?.orderDetail.filter(o => o.product.sku === promo.item_sku)
-          if(detail?.length){
-            let total = await promotionHandler({order, promo, detail, t})
-            new_total_price += total
-          }
         }
-        await t.order.update({where:{id: order?.id}, data:{total_price: new_total_price}})
-        return await t.order.findFirst({
-          where: {status_id: status_waiting?.id}, 
-          include:{
-            orderDetail: {
-              include:{
-                product: true
-              }
-            },
-            status: true
-          }})
       })
-      console.log(new_total_price);
-      
+      await handle_promotion({order_id: order.id, t: db})
+      const updated_order = await db.order.findUnique({
+        where: {id: order.id},
+        include: {
+          status: true,
+          order_detail: {
+            include:{
+              product: true
+            }
+          },
+          order_promotion: {
+            include:{
+              promotion: {
+                include: {
+                  item:true,
+                  type: true,
+                  bonus_item: true
+                }
+              }
+            }
+          },
+        }
+      })
       return updated_order
     } catch (error) {
-      
+      throw error
     }
   }
-}
-
-const promotionHandler = async (payload: any) => {
-  let {order, promo, detail, t} = payload
-  let sku = promo.item_sku
-  let total = 0
-  let price = detail[0].price
-  for (const d of detail) {
-    total += d.qty
-  }
-  let total_price = order.total_price
-  
-  switch (sku) {
-    case '120P90':
-      if(total >= 3){
-        let rem = total % 3
-        let initial_price = total * price
-        let not_disc = rem * price
-        total_price = not_disc + (2/3 * (initial_price - not_disc))       
-      }
-      break;
-    case 'A304SD':
-      if(total >= 3){
-        total_price = total * price * 0.9
-      }
-      break;
-    default:
-      break;
-  }
-  return total_price
 }

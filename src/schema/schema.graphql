@@ -20,7 +20,14 @@ type Order {
   id: ID!
   total_price: Float
   status: Status
-  orderDetail: [OrderDetail]
+  order_detail: [OrderDetail]
+  order_promotion: [OrderPromotion]
+}
+
+type OrderPromotion {
+  id: ID!
+  order: Order,
+  promotion: Promotion
 }
 
 type OrderDetail {
@@ -29,6 +36,7 @@ type OrderDetail {
   price: Float
   order_id: Int
   product: Product!
+  order_type: String
 }
 
 input AddOrderInput {

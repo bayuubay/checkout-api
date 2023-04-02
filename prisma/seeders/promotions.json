@@ -1,7 +1,7 @@
 {
   "Promotion": [
     {
-      "item_sku" : "120P90",
+      "item_sku" : "43N23P",
       "description" : "Each sale of a MacBook Pro comes with a free Raspberry Pi B",
       "type_id" : 1,
       "percentage" : 0.0,
@@ -11,7 +11,7 @@
       "bonus_item_sku" : "234234"
     },
     {
-      "item_sku" : "43N23P",
+      "item_sku" : "120P90",
       "description" : "Buy 3 Google Homes for the price of 2",
       "type_id" : 3,
       "percentage" : 0.0,

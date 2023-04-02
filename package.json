@@ -24,7 +24,7 @@
     "start:dev": "nodemon src/server.ts",
     "start:prod": "npm run compile && node dist/server.js",
     "test": "jest",
-    "build": "npx pkg dist/server.js"
+    "build": "npx pkg package.json"
   },
   "keywords": [],
   "author": "",
