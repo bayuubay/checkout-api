@@ -18,11 +18,11 @@ Node.js (v16 or later)
 - go to https://github.com/bayuubay/checkout-api
 - go to `Actions` tab
 - choose succeed workflow
-- at the Artifacts section there is binary files called `checkout_api_binary`
+- at the Artifacts section there is binary files called `shopping_api_binary`
 - click to download
 - go to terminal
 - navigate to dowloaded binary directory
-- run `./checkout_api_binary`
+- run `./shopping_api_binary`
 
 ## Project structure
 The project has the following structure:
@@ -84,7 +84,7 @@ Running jest example unit testing
 ```
 npm run build
 ```
-Building the app into executable binary file named `checkout_api`
+Building the app into executable binary file named `shopping_api`
 
 
 ## Technologies

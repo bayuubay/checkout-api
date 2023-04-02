@@ -28,6 +28,9 @@ jobs:
 
     - name: Install dependencies
       run: npm install
+    
+    - name: Compile project
+      run: npm run compile
 
     - name: Build binary
       run: npm run build
