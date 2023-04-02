@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "bin":{
-    "checkout_api": "./dist/server.js"
+    "shopping_api": "./dist/server.js"
   },
   "pkg":{
     "scripts": "server.js",
@@ -13,8 +13,8 @@
       "node_modules/**",
       "prisma/**"
     ],
-    "targets": ["node16-macos-x64"],
-    "outputPath": "./"
+    "targets": ["node16-macos-x64", "node16-win-x64", "node16-linux-x64"],
+    "outputPath": "./bin"
   },
   "scripts": {
     "graph": "npx copyfiles -f src/schema/*.graphql dist/schema/",
