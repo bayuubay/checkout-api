@@ -3,7 +3,8 @@
     {
       "item_sku" : "43N23P",
       "description" : "Each sale of a MacBook Pro comes with a free Raspberry Pi B",
-      "type_id" : 1,
+      "type_id": 0,
+      "type" : "Buy 1 get 1",
       "percentage" : 0.0,
       "quantity" : 0,
       "min_qty" : 0,
@@ -13,22 +14,24 @@
     {
       "item_sku" : "120P90",
       "description" : "Buy 3 Google Homes for the price of 2",
-      "type_id" : 3,
+      "type_id": 0,
+      "type" : "Item Discount",
       "percentage" : 0.0,
       "quantity" : 1,
       "min_qty" : 3,
       "price" : 0.0,
-      "bonus_item_sku" : ""
+      "bonus_item_sku" : null
     },
     {
       "item_sku" : "A304SD",
       "description" : "Buying more than 3 Alexa Speakers will have a 10% discount on all Alexa speakers",
-      "type_id" : 2,
+      "type" : "Cash Discount",
+      "type_id": 0,
       "percentage" : 0.1,
       "quantity" : 0,
       "min_qty" : 3,
       "price" : 0.0,
-      "bonus_item_sku" : ""
+      "bonus_item_sku" : null
     }
   ]}
   
