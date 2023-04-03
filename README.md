@@ -38,8 +38,7 @@ The project has the following structure:
 │   └── @types/             # Type definitions
 ├── tests/
 │   ├── __mock__/           # Mocking functions for testing
-│   ├── resolvers.test.ts   # Tests for the GraphQL resolvers
-│   └── setup.ts            # Setup file for Jest
+│   └── resolvers.test.ts   # Tests for the GraphQL resolvers
 ├── prisma/
 │   ├── schema.prisma       # The Prisma schema
 │   ├── migrations/         # The Prisma migrations
